@@ -43,19 +43,37 @@
             flex-direction: column;
             transition: opacity 0.6s ease, visibility 0.6s ease;
         }
+
+        /* Generic loader text color - Only applied if not otherwise specified */
+        #page-loader div, #page-loader p {
+            color: #d4aa50;
+        }
+
         #page-loader.hidden {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
         }
+
         .loader-logo {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #d4aa50;
-            letter-spacing: 0.15em;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
             margin-bottom: 32px;
-            text-transform: uppercase;
+            /* Ensure the container itself is fully visible */
+            opacity: 1 !important;
+            visibility: visible !important;
         }
+
+        /* Force image visibility */
+        .loader-logo img {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
         .loader-bar {
             width: 120px;
             height: 2px;
@@ -63,6 +81,7 @@
             border-radius: 1px;
             overflow: hidden;
         }
+
         .loader-progress {
             height: 100%;
             width: 0%;
@@ -70,6 +89,7 @@
             border-radius: 1px;
             animation: loaderFill 1.2s ease-out forwards;
         }
+
         @keyframes loaderFill {
             0%   { width: 0%; }
             100% { width: 100%; }
@@ -919,16 +939,14 @@ body > div[style*="position: fixed"][style*="bottom:"] {
 <body class="animated-bg text-white font-sans overflow-x-hidden" style="background-color: #FDFBF7 !important; background: #FDFBF7 !important;" x-data="{sector:'residential',sqft:500,design:'standard',rates:{standard:90,luxury:95,rft:85},galleryFilter:'all',showLightbox:false,lightboxImg:'',mobileMenu:false}">
 
     <!-- ✅ INSTANT PAGE LOADER -->
-    <div id="page-loader">
-         <div class="loader-logo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-           <img src="images/R_K_logo.webp" alt="R.K Ceiling Solutions" style="max-width: 320px; max-height: 140px; width: auto; height: auto; object-fit: contain; margin: 0 auto 20px auto; display: block;">
-           <div style="font-size: 15px; letter-spacing: 0.4em; color: #d4aa50; text-transform: uppercase; font-weight: 900; white-space: nowrap; background: linear-gradient(135deg, #d4aa50 0%, #f0c860 50%, #d4aa50 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 15px rgba(212,170,80,0.4); position: relative; padding: 6px 0;">
-             R.K Ceiling Solutions
-             <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 60%; height: 1px; background: linear-gradient(90deg, transparent, #d4aa50, transparent);"></div>
-           </div>
-         </div>
-        <div class="loader-bar">
-            <div class="loader-progress"></div>
+    <div id="page-loader" style="position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: #FDFBF7 !important; z-index: 2147483647 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important;">
+        <img src="images/R_K_logo.webp" alt="R.K Ceiling Solutions" style="max-width: 320px; max-height: 140px; display: block !important; margin: 0 0 20px 0 !important;">
+        <div style="font-size: 15px !important; letter-spacing: 0.4em !important; text-transform: uppercase !important; font-weight: 900 !important; white-space: nowrap !important; background: linear-gradient(135deg, #d4aa50 0%, #f0c860 50%, #d4aa50 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; position: relative !important; padding: 6px 0 !important; margin-bottom: 32px !important;">
+            R.K Ceiling Solutions
+            <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 60%; height: 1px; background: linear-gradient(90deg, transparent, #d4aa50, transparent);"></div>
+        </div>
+        <div style="width: 120px; height: 2px; background: rgba(212,170,80,0.2); border-radius: 1px; overflow: hidden;">
+            <div style="height: 100%; width: 0%; background: #d4aa50; border-radius: 1px; animation: loaderFill 1.2s ease-out forwards;"></div>
         </div>
     </div>
 
