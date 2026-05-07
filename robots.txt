@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rkceilingsolutions.com/sitemap.xml
+
+# Block admin pages from indexing
+Disallow: /admin.html
+Disallow: /admin-guide.html
+
+# Allow all other pages
+Allow: /index.html
+Allow: /blog.html
+Allow: /contact-form.html
