@@ -1424,10 +1424,10 @@ body > div[style*="position: fixed"][style*="bottom:"] {
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <template x-for="(item,index) in [
                 // RESIDENTIAL PORTFOLIO (SELECTED BEST 9)
-{filter:'residential',cat:'Residential',title:'Floating Island Concept',desc:'Hidden LED strips create floating ceiling effect',img:'images/floating-island-pop-ceiling-concept.webp',lazy:true},
-{filter:'residential',cat:'Residential',title:'Designer Bedroom Ceiling',desc:'Clean-line double-tier tray design with warm cove lighting',img:'images/luxury-bedroom-designer-pop-ceiling.webp',lazy:true},
-{filter:'residential',cat:'Residential',title:'Completed Living Room',desc:'Multi-tier false ceiling with integrated LED spotlights',img:'images/completed-modern-living-room-false-ceiling.webp',lazy:true},
-{filter:'residential',cat:'Residential',title:'Luxury Living Room',desc:'Premium POP ceiling with integrated LED profile lighting, curved corner finishes, and central decorative fixtures',img:'images/luxury-suite-living.webp',lazy:true},
+                {filter:'residential',cat:'Residential',title:'Floating Island Concept',desc:'Hidden LED strips create floating ceiling effect',img:'images/floating-island-pop-ceiling-concept.webp',lazy:true},
+                {filter:'residential',cat:'Residential',title:'Designer Bedroom Ceiling',desc:'Clean-line double-tier tray design with warm cove lighting',img:'images/luxury-bedroom-designer-pop-ceiling.webp',lazy:true},
+                {filter:'residential',cat:'Residential',title:'Completed Living Room',desc:'Multi-tier false ceiling with integrated LED spotlights',img:'images/completed-modern-living-room-false-ceiling.webp',lazy:true},
+                {filter:'residential',cat:'Residential',title:'Luxury Living Room',desc:'Premium POP ceiling with integrated LED profile lighting, curved corner finishes, and central decorative fixtures',img:'images/luxury-suite-living.webp',lazy:true},
                 {filter:'residential',cat:'Residential',title:'Luxury Main Hall',desc:'Sleek, modern hall with embedded LED profile lighting, creating a premium and spacious look.',img:'images/parallel-groove-hall-design.webp',lazy:true},
                 {filter:'residential',cat:'Residential',title:'Modern Square Panel Ceiling',desc:'Clean and modern design with beautiful square panel layout',img:'images/modern-square-panel-pop-ceiling.webp',lazy:true},
                 {filter:'residential',cat:'Residential',title:'Modern PVC Ceiling',desc:'Premium ceiling combining white panels with wood texture borders',img:'images/wood-finish-pop-ceiling-combination.webp',lazy:true},
@@ -1446,10 +1446,10 @@ body > div[style*="position: fixed"][style*="bottom:"] {
                 ]" :key="index">
                     <div x-show="galleryFilter==='all'||galleryFilter===item.filter" class="reveal-scale group relative overflow-hidden rounded-2xl bg-slate-800 aspect-square cursor-pointer" @click="lightboxImg=item.img;showLightbox=true">
 <img :src="item.img" :alt="item.title" class="w-full h-full object-cover rounded-2xl group-hover:scale-110 transition-transform duration-700" :loading="item.lazy ? 'lazy' : 'eager'">
-                        <div class="portfolio-text-overlay absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col justify-end p-5 rounded-b-2xl">
+                        <div class="portfolio-text-overlay absolute inset-x-0 bottom-0 h-auto md:h-2/5 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col justify-end p-5 rounded-b-2xl">
                             <span class="text-[10px] font-bold uppercase tracking-widest mb-1" x-text="item.cat"></span>
                             <h4 class="text-lg font-bold mb-1" x-text="item.title"></h4>
-                            <p class="text-sm leading-relaxed line-clamp-2" x-text="item.desc"></p>
+                            <p class="text-sm leading-relaxed line-clamp-3 md:line-clamp-2" x-text="item.desc"></p>
                         </div>
                         <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110"><i class="fa-solid fa-expand text-white"></i></div>
                     </div>
