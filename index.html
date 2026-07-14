@@ -1935,9 +1935,35 @@ body > div[style*="position: fixed"][style*="bottom:"] {
         <i class="fa-brands fa-whatsapp text-3xl" style="font-size: 2rem !important;"></i>
     </a>
 
-    <!-- Tidio Live Chat -->
-    <script src="//code.tidio.co/twdrpnhn9pbv9nlrulma4ra8uvtveyo4.js" async></script>
-    
+    <!-- Tawk.to Live Chat with Visitor Notifications -->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6a5665e6cb0d0d1d4859d211/1jtgns3v4';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    <!--End of Tawk.to Script-->
+
+    <style>
+    /* Move Tawk.to button to left side to avoid WhatsApp button overlap */
+    .tawk-button {
+        right: auto !important;
+        left: 20px !important;
+        bottom: 20px !important;
+    }
+    @media (max-width: 768px) {
+        .tawk-button {
+            left: 10px !important;
+            bottom: 80px !important;
+        }
+    }
+    </style>
+
     <!-- ✅ NON RENDER BLOCKING SCRIPTS MOVED TO BOTTOM -->
     <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
