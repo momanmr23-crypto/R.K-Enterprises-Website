@@ -990,17 +990,14 @@ section.py-12 {
 
      </style>
 <style>
-/* NUCLEAR OPTION: Hide ALL Elfsight branding completely for all visitors */
-div[class*="elfsight"] + div,
-div[class*="eapps"],
-div[class*="branding"],
-div[class*="badge"],
-div[class*="logo"],
-div[class*="powered"],
-div[class*="link"],
+/* Hide ONLY Elfsight branding/powered-by elements - NOT the widget content */
 a[href*="elfsight"],
-.eapps-google-reviews-header *,
-.eapps-google-reviews-footer *
+div[class*="branding"],
+div[class*="powered"],
+div[class*="badge"],
+.eapps-link,
+.eapps-google-reviews-header,
+.eapps-google-reviews-footer
 {
     display: none !important;
     visibility: hidden !important;
@@ -1011,6 +1008,19 @@ a[href*="elfsight"],
     height: 0 !important;
     pointer-events: none !important;
     z-index: -99999 !important;
+}
+
+/* Reduce Elfsight widget internal spacing */
+.elfsight-app-e31f3ad3-2ed5-43fc-97a3-ba96d65e5d98 {
+    display: block !important;
+    margin-bottom: 0 !important;
+}
+.elfsight-app-e31f3ad3-2ed5-43fc-97a3-ba96d65e5d98 > a[href*="elfsight"] {
+    display: none !important;
+}
+.elfsight-app-e31f3ad3-2ed5-43fc-97a3-ba96d65e5d98 > div > div > div > div:last-child {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 /* Force hide any elements that try to inject after load */
@@ -1646,66 +1656,21 @@ body > div[style*="position: fixed"][style*="bottom:"] {
     <div class="gold-strip" style="position: relative; z-index: 50; transform: translateZ(0);"></div>
 
     <!-- Commercial Projects Section -->
-    <section id="commercial-projects" class="py-32 relative">
+    <section id="commercial-projects" class="py-16 relative">
         <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center mb-16 reveal">
+            <div class="text-center mb-6 reveal">
                 <span class="text-amber-400 text-xs font-bold uppercase tracking-[0.3em]">Client Love</span>
                 <h2 class="text-5xl font-black mt-4 gold-accent">What Our Clients Say</h2>
                 <p class="text-slate-400 mt-2">Trusted by hundreds of satisfied customers across Mumbai</p>
                 <p class="text-amber-400 text-xs font-bold uppercase tracking-[0.3em] mt-4">Google Reviews</p>
             </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="reveal bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:border-amber-500/30 transition-all duration-500 hover:-translate-y-2">
-                    <div class="flex items-center space-x-4 mb-6">
-                        <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl" style="background: linear-gradient(135deg, #3b82f6, #4f46e5);">AJ</div>
-                        <div><h4 class="font-bold text-white">Amit Joshi</h4><p class="text-sm text-slate-400">Bandra, Mumbai</p></div>
-                    </div>
-                    <div class="flex items-center space-x-1 mb-4">
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-slate-500"></i>
-                    </div>
-                    <p class="text-slate-300 leading-relaxed">"Good work overall. Took 3 days longer than promised but the finish was very clean. Workers were polite and cleaned up properly. Would hire again."</p>
-                </div>
-                <div class="reveal bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:border-amber-500/30 transition-all duration-500 hover:-translate-y-2">
-                    <div class="flex items-center space-x-4 mb-6">
-                        <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl" style="background: linear-gradient(135deg, #f43f5e, #db2777);">SP</div>
-                        <div><h4 class="font-bold text-white">Sneha Patel</h4><p class="text-sm text-slate-400">Andheri, Mumbai</p></div>
-                    </div>
-                    <div class="flex items-center space-x-1 mb-4">
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                    </div>
-                    <p class="text-slate-300 leading-relaxed">"Did our office ceiling last month. Exactly as quoted, no extra charges. Came every day on time. Very professional team. No complaints at all."</p>
-                </div>
-                <div class="reveal bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 hover:border-amber-500/30 transition-all duration-500 hover:-translate-y-2">
-                    <div class="flex items-center space-x-4 mb-6">
-                        <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl" style="background: linear-gradient(135deg, #14b8a6, #06b6d4);">RK</div>
-                        <div><h4 class="font-bold text-white">Rajesh Kumar</h4><p class="text-sm text-slate-400">Thane</p></div>
-                    </div>
-                    <div class="flex items-center space-x-1 mb-4">
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star text-amber-400"></i>
-                        <i class="fa-solid fa-star-half-stroke text-amber-400"></i>
-                    </div>
-                    <p class="text-slate-300 leading-relaxed">"Wall punning came out really good. You can actually see the difference after painting. Only issue was they forgot one cornice corner but came back next day and fixed it."</p>
-                </div>
-            </div>
-
-            <div class="mt-20 reveal">
+            <div class="mt-4">
                 <script src="https://elfsightcdn.com/platform.js" async></script>
-                <div class="elfsight-app-e31f3ad3-2ed5-43fc-97a3-ba96d65e5d98" data-elfsight-app-lazy></div>
+                <div class="elfsight-app-e31f3ad3-2ed5-43fc-97a3-ba96d65e5d98"></div>
             </div>
                 
 
-            <div class="mt-16 bg-white/5 backdrop-blur-sm rounded-2xl p-8 grid grid-cols-2 md:flex md:justify-around items-center text-center reveal border border-white/10 gap-6">
+            <div class="mt-4 bg-white/5 backdrop-blur-sm rounded-2xl p-8 grid grid-cols-2 md:flex md:justify-around items-center text-center reveal border border-white/10 gap-6">
                 <div><div class="text-5xl font-black text-gradient counter-glow counter" data-target="2000">0</div><div class="text-sm text-slate-400 uppercase tracking-wider mt-2">Projects Completed</div></div>
                 <div class="hidden md:block" style="width:1px;background:rgba(212,170,80,0.3);height:48px;"></div>
                 <div><div class="text-5xl font-black text-gradient counter-glow counter" data-target="1000">0</div><div class="text-sm text-slate-400 uppercase tracking-wider mt-2">Happy Clients</div></div>
