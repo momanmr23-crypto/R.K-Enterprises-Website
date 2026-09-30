@@ -646,8 +646,11 @@ section {
         .lightbox img{max-width:90vw;max-height:80vh;object-fit:contain;border-radius:12px;animation:lightboxIn .5s cubic-bezier(.16,1,.3,1)}
         @keyframes lightboxIn{from{transform:scale(.8) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 
+        /* Lightbox - allow horizontal swipe, block native back-gesture */
+        .lightbox{touch-action: pan-y;}
+
         /* Lightbox Close Button - Fixed for mobile */
-        .lightbox button {
+        .lightbox-close {
             position: fixed;
             top: 80px;
             right: 20px;
@@ -662,10 +665,49 @@ section {
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #fff;
         }
 
+        /* Lightbox Prev / Next Arrows */
+        .lightbox-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            font-size: 22px;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s ease, transform .2s ease;
+        }
+        .lightbox-nav:hover { background: rgba(245,158,11,0.9); }
+        .lightbox-prev { left: 24px; }
+        .lightbox-next { right: 24px; }
+        .lightbox-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            padding: 6px 16px;
+            border-radius: 999px;
+            z-index: 101;
+        }
+        .lightbox-stage { position: relative; display: flex; align-items: center; justify-content: center; }
+        .lightbox img { user-select: none; -webkit-user-drag: none; }
+
         @media(max-width:768px) {
-            .lightbox button {
+            .lightbox-close {
                 top: 80px;
                 right: 20px;
                 width: 70px;
@@ -676,6 +718,10 @@ section {
                 max-width: 95vw;
                 max-height: 75vh;
             }
+            .lightbox-nav { width: 48px; height: 48px; font-size: 20px; }
+            .lightbox-prev { left: 10px; }
+            .lightbox-next { right: 10px; }
+            .lightbox-counter { bottom: 12px; }
         }
 
         /* Floating CTA */
@@ -1029,7 +1075,27 @@ body > div[style*="position: fixed"][style*="bottom:"] {
 }
 </style>
 </head>
-<body class="animated-bg text-white font-sans overflow-x-hidden" style="background-color: #FDFBF7 !important; background: #FDFBF7 !important;" x-data="{sector:'residential',sqft:500,design:'standard',rates:{standard:90,luxury:95,rft:85},galleryFilter:'all',showLightbox:false,lightboxImg:'',mobileMenu:false}">
+<body class="animated-bg text-white font-sans overflow-x-hidden" style="background-color: #FDFBF7 !important; background: #FDFBF7 !important;" x-data="{
+  sector:'residential', sqft:500, design:'standard',
+  rates:{standard:90,luxury:95,rft:85},
+  galleryFilter:'all',
+  showLightbox:false, lightboxImg:'', lightboxList:[], lightboxIndex:0, lbTouchX:0,
+  mobileMenu:false,
+  openLightbox(cardEl){
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('#residential-projects img')).filter(function(i){ return i.offsetParent !== null; });
+    var clicked = cardEl ? cardEl.querySelector('img') : null;
+    this.lightboxList = nodes.map(function(i){ return i.getAttribute('src'); });
+    if(this.lightboxList.length === 0 && clicked){ this.lightboxList = [clicked.getAttribute('src')]; }
+    var idx = clicked ? nodes.indexOf(clicked) : 0;
+    this.lightboxIndex = idx < 0 ? 0 : idx;
+    this.lightboxImg = this.lightboxList[this.lightboxIndex] || '';
+    this.showLightbox = true;
+  },
+  nextImg(){ if(this.lightboxList.length < 2) return; this.lightboxIndex = (this.lightboxIndex + 1) % this.lightboxList.length; this.lightboxImg = this.lightboxList[this.lightboxIndex]; },
+  prevImg(){ if(this.lightboxList.length < 2) return; this.lightboxIndex = (this.lightboxIndex - 1 + this.lightboxList.length) % this.lightboxList.length; this.lightboxImg = this.lightboxList[this.lightboxIndex]; },
+  lbTouchStart(e){ this.lbTouchX = e.changedTouches[0].clientX; },
+  lbTouchEnd(e){ var dx = e.changedTouches[0].clientX - this.lbTouchX; if(Math.abs(dx) > 40){ if(dx < 0){ this.nextImg(); } else { this.prevImg(); } } }
+}">
 
     <!-- ✅ INSTANT PAGE LOADER -->
     <div id="page-loader" style="position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: #FDFBF7 !important; z-index: 2147483647 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important;">
@@ -1084,9 +1150,18 @@ body > div[style*="position: fixed"][style*="bottom:"] {
     </div>
 
     <!-- Lightbox -->
-    <div class="lightbox" :class="{'active':showLightbox}" @click.self="showLightbox=false">
-        <button @click="showLightbox=false" class="absolute top-6 right-6 text-white text-3xl hover:text-amber-400 transition-colors"><i class="fa-solid fa-xmark"></i></button>
-        <img :src="lightboxImg" alt="Project Image" class="shadow-2xl">
+    <div class="lightbox" :class="{'active':showLightbox}" @click.self="showLightbox=false"
+         @touchstart.passive="lbTouchStart($event)" @touchend.passive="lbTouchEnd($event)"
+         @keydown.window.escape="showLightbox=false"
+         @keydown.window.arrow-right="showLightbox &amp;&amp; nextImg()"
+         @keydown.window.arrow-left="showLightbox &amp;&amp; prevImg()">
+        <button @click="showLightbox=false" class="lightbox-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        <button @click.stop="prevImg()" x-show="lightboxList.length > 1" class="lightbox-nav lightbox-prev" aria-label="Previous image"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="lightbox-stage">
+            <img :src="lightboxImg" alt="Project Image" draggable="false" class="shadow-2xl">
+            <div class="lightbox-counter" x-show="lightboxList.length > 1"><span x-text="lightboxIndex + 1"></span> / <span x-text="lightboxList.length"></span></div>
+        </div>
+        <button @click.stop="nextImg()" x-show="lightboxList.length > 1" class="lightbox-nav lightbox-next" aria-label="Next image"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
     <!-- Navigation -->
@@ -1122,18 +1197,20 @@ body > div[style*="position: fixed"][style*="bottom:"] {
             x-transition:leave-start="opacity:100 translate-y-0"
             x-transition:leave-end="opacity:0 -translate-y-full"
             @click.away="mobileMenu = false"
-            class="fixed inset-0 w-full h-screen bg-slate-900/95 backdrop-blur-2xl z-[10000] md:hidden flex flex-col items-center justify-center"
+            class="absolute top-full right-4 mt-3 w-64 origin-top-right md:hidden z-[10000] rounded-2xl overflow-hidden border border-amber-500/30 shadow-2xl"
+            style="background: rgba(15,23,42,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);"
         >
-            <div class="flex flex-col items-center space-y-8">
-                <a href="#services" @click="mobileMenu = false" class="text-3xl font-bold uppercase tracking-widest text-white hover:text-amber-400 transition-colors">Services</a>
-                <a href="#residential-projects" @click="mobileMenu = false" class="text-3xl font-bold uppercase tracking-widest text-white hover:text-amber-400 transition-colors">Portfolio</a>
-                <a href="#process" @click="mobileMenu = false" class="text-3xl font-bold uppercase tracking-widest text-white hover:text-amber-400 transition-colors">Process</a>
-                <a href="blog.html" @click="mobileMenu = false" class="text-3xl font-bold uppercase tracking-widest text-white hover:text-amber-400 transition-colors">Blog</a>
-                <a href="#faq" @click="mobileMenu = false" class="text-3xl font-bold uppercase tracking-widest text-white hover:text-amber-400 transition-colors">FAQ</a>
-                <a href="#contact" @click="mobileMenu = false" class="text-3xl font-bold uppercase tracking-widest text-white hover:text-amber-400 transition-colors">Contact</a>
+            <div class="h-1 w-full bg-gradient-to-r from-amber-500 via-amber-300 to-amber-500"></div>
+            <div class="flex flex-col p-2.5">
+                <a href="#services" @click="mobileMenu = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white font-bold uppercase tracking-widest text-sm hover:bg-amber-500/15 transition-all"><i class="fa-solid fa-layer-group text-amber-400 w-4 text-center"></i>Services</a>
+                <a href="#residential-projects" @click="mobileMenu = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white font-bold uppercase tracking-widest text-sm hover:bg-amber-500/15 transition-all"><i class="fa-solid fa-images text-amber-400 w-4 text-center"></i>Portfolio</a>
+                <a href="#process" @click="mobileMenu = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white font-bold uppercase tracking-widest text-sm hover:bg-amber-500/15 transition-all"><i class="fa-solid fa-list-check text-amber-400 w-4 text-center"></i>Process</a>
+                <a href="blog.html" @click="mobileMenu = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white font-bold uppercase tracking-widest text-sm hover:bg-amber-500/15 transition-all"><i class="fa-solid fa-blog text-amber-400 w-4 text-center"></i>Blog</a>
+                <a href="#faq" @click="mobileMenu = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white font-bold uppercase tracking-widest text-sm hover:bg-amber-500/15 transition-all"><i class="fa-solid fa-circle-question text-amber-400 w-4 text-center"></i>FAQ</a>
+                <a href="#contact" @click="mobileMenu = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white font-bold uppercase tracking-widest text-sm hover:bg-amber-500/15 transition-all"><i class="fa-solid fa-envelope text-amber-400 w-4 text-center"></i>Contact</a>
                 
-                <a href="https://wa.me/918082005568" class="mt-4 bg-amber-500 text-white px-12 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/30">
-                    WhatsApp Us
+                <a href="https://wa.me/918082005568" class="mt-1.5 flex items-center justify-center gap-2 bg-amber-500 text-white px-4 py-3 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/30">
+                    <i class="fa-brands fa-whatsapp text-base"></i>WhatsApp Us
                 </a>
             </div>
         </div>
@@ -1455,8 +1532,8 @@ body > div[style*="position: fixed"][style*="bottom:"] {
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="reveal bg-white/5 backdrop-blur-sm rounded-2xl p-6 text-center hover:bg-white/10 transition-all hover:-translate-y-2 border border-white/10 hover:border-amber-500/30">
                     <i class="fa-solid fa-certificate text-4xl text-amber-400 mb-4"></i>
-                    <h3 class="font-bold text-lg mb-2">6 Months Workmanship Warranty</h3>
-                    <p class="text-slate-400 text-sm">6 months warranty on all installation work.</p>
+                    <h3 class="font-bold text-lg mb-2">2-Year Workmanship Warranty (T&amp;C apply)</h3>
+                    <p class="text-slate-400 text-sm">2-year warranty on all installation work. Ask us for full warranty terms.</p>
                 </div>
                 <div class="reveal bg-white/5 backdrop-blur-sm rounded-2xl p-6 text-center hover:bg-white/10 transition-all hover:-translate-y-2 border border-white/10 hover:border-amber-500/30">
                     <i class="fa-solid fa-check-circle text-4xl text-amber-400 mb-4"></i>
@@ -1493,6 +1570,16 @@ body > div[style*="position: fixed"][style*="bottom:"] {
                     <h3 class="font-bold text-lg mb-2">Post-Project Support</h3>
                     <p class="text-slate-400 text-sm">Free maintenance check within 6 months.</p>
                 </div>
+            </div>
+
+            <!-- Know More About Us / Company Profile -->
+            <div class="mt-10 reveal bg-white/5 backdrop-blur-sm rounded-2xl p-8 md:p-12 text-center border border-white/10 hover:border-amber-500/30 transition-all">
+                <span class="text-amber-400 text-xs font-bold uppercase tracking-[0.3em]">Get To Know Us Better</span>
+                <h3 class="text-3xl md:text-4xl font-black mt-4 mb-3 text-white">Know About Us In Detail</h3>
+                <p class="text-slate-400 max-w-2xl mx-auto mb-8">Explore our complete company profile — services, materials, our track record &amp; experience.</p>
+                <a href="company_profile/RK_Ceiling_Solutions_Company_Profile.pdf" target="_blank" download class="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400 text-white px-8 py-4 rounded-full font-bold uppercase text-xs tracking-widest transition-all shadow-lg shadow-amber-500/30 hover:scale-105 transform">
+                    <i class="fa-solid fa-file-pdf"></i> Download Company Profile (PDF)
+                </a>
             </div>
         </div>
     </section>
@@ -1537,7 +1624,7 @@ body > div[style*="position: fixed"][style*="bottom:"] {
                 {filter:'commercial',cat:'Commercial',title:'Modern Banquate',desc:'Modern interior with a geometric coffered ceiling featuring rectangular and oval recessed panels with hanging lights.',img:'images/wide-rectangular-tray-ceiling-living-room.webp',lazy:true},
                 {filter:'commercial',cat:'Commercial',title:'Modern College Classroom',desc:'Clean POP ceiling with integrated LED panels, delivering bright, uniform lighting for a fresh, professional classroom look.',img:'images/modern_college_classroom.webp',lazy:true},
                 ]" :key="index">
-                    <div x-show="galleryFilter==='all'||galleryFilter===item.filter" class="reveal-scale group relative overflow-hidden rounded-2xl bg-slate-800 aspect-square cursor-pointer" @click="lightboxImg=item.img;showLightbox=true">
+                    <div x-show="galleryFilter==='all'||galleryFilter===item.filter" class="reveal-scale group relative overflow-hidden rounded-2xl bg-slate-800 aspect-square cursor-pointer" @click="openLightbox($el)">
 <img :src="item.img" :alt="item.title" class="w-full h-full object-cover rounded-2xl group-hover:scale-110 transition-transform duration-700" :loading="item.lazy ? 'lazy' : 'eager'">
                         <div class="portfolio-text-overlay absolute inset-x-0 bottom-0 h-auto md:h-2/5 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col justify-end p-5 rounded-b-2xl">
                             <span class="text-[10px] font-bold uppercase tracking-widest mb-1" x-text="item.cat"></span>
@@ -1828,16 +1915,6 @@ body > div[style*="position: fixed"][style*="bottom:"] {
                     </div>
                 </div>
 
-                <div class="mt-8 bg-amber-500/10 border border-amber-500/20 p-5 rounded-xl reveal">
-                    <h4 class="font-bold text-emerald-500 mb-3" style="color: #c9951a !important;">Our Commitment</h4>
-                    <ul class="text-sm space-y-2" style="color: #5C4D3C !important;">
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i>20+ Years Experience</li>
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i>Free Site Visit & Quote</li>
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i>Premium Materials Only</li>
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i>On-time Delivery (98%)</li>
-                        <li><i class="fa-solid fa-check text-emerald-500 mr-2"></i>100% Satisfaction Guaranteed</li>
-                    </ul>
-                </div>
             </div>
         </div>
     </section>
@@ -1892,6 +1969,7 @@ body > div[style*="position: fixed"][style*="bottom:"] {
                         <li><a href="#calculator" class="hover:text-amber-400 transition-colors">Calculator</a></li>
                         <li><a href="blog.html" class="hover:text-amber-400 transition-colors">Blog</a></li>
                         <li><a href="#contact" class="hover:text-amber-400 transition-colors">Contact</a></li>
+                        <li><a href="company_profile/RK_Ceiling_Solutions_Company_Profile.pdf" target="_blank" download class="hover:text-amber-400 transition-colors"><i class="fa-solid fa-file-pdf mr-1"></i>Company Profile (PDF)</a></li>
                     </ul>
                 </div>
                 <div>
@@ -1909,8 +1987,8 @@ body > div[style*="position: fixed"][style*="bottom:"] {
                 <div>
                     <h4 class="text-white font-bold mb-4 uppercase tracking-widest text-sm">Contact</h4>
                     <ul class="space-y-2 text-slate-400 text-sm">
-                        <li><i class="fa-solid fa-phone mr-2 text-emerald-500"></i>+91 8082005568</li>
-                        <li><i class="fa-solid fa-envelope mr-2 text-emerald-500"></i>contact@rkceilingsolutions.com</li>
+                        <li><i class="fa-solid fa-phone mr-2 text-emerald-500"></i><a href="tel:+918082005568" class="hover:text-amber-400 transition-colors">+91 8082005568</a></li>
+                        <li><i class="fa-solid fa-envelope mr-2 text-emerald-500"></i><a href="mailto:contact@rkceilingsolutions.com" class="hover:text-amber-400 transition-colors">contact@rkceilingsolutions.com</a></li>
                         <li><i class="fa-solid fa-location-dot mr-2 text-emerald-500"></i>Mumbai, Maharashtra</li>
                     </ul>
                 </div>
@@ -1936,8 +2014,13 @@ body > div[style*="position: fixed"][style*="bottom:"] {
     </a>
 
     <!-- Tawk.to Live Chat with Visitor Notifications -->
+    <!-- Chat widget UI is hidden on purpose, but the connection stays active so visitor notifications keep working -->
     <script type="text/javascript">
     var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    Tawk_API.onLoad = function () {
+        // Hide the chat widget UI (visitor monitoring / notifications remain active)
+        if (typeof Tawk_API.hideWidget === 'function') { Tawk_API.hideWidget(); }
+    };
     (function(){
     var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
     s1.async=true;
@@ -1950,17 +2033,18 @@ body > div[style*="position: fixed"][style*="bottom:"] {
     <!--End of Tawk.to Script-->
 
     <style>
-    /* Move Tawk.to button to left side to avoid WhatsApp button overlap */
-    .tawk-button {
-        right: auto !important;
-        left: 20px !important;
-        bottom: 20px !important;
-    }
-    @media (max-width: 768px) {
-        .tawk-button {
-            left: 10px !important;
-            bottom: 80px !important;
-        }
+    /* Hide the Tawk.to chat widget UI (bubble + window) but keep visitor notifications active */
+    #tawk-bubble-container,
+    #tawkchat-minified-container,
+    #tawkchat-container,
+    #tawkchat-maximized-wrapper,
+    .tawk-min-container,
+    .tawk-button,
+    iframe[title="chat widget"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
     }
     </style>
 
@@ -2347,5 +2431,18 @@ body > div[style*="position: fixed"][style*="bottom:"] {
 
     </script>
     </div><!-- End app-wrapper -->
+
+    <script>
+        // GA4 - Track Company Profile PDF downloads
+        document.addEventListener('click', function (e) {
+            var link = e.target.closest('a[href$="Company_Profile.pdf"]');
+            if (link && typeof gtag === 'function') {
+                gtag('event', 'file_download', {
+                    file_name: 'RK_Ceiling_Solutions_Company_Profile.pdf',
+                    link_url: link.href
+                });
+            }
+        });
+    </script>
 </body>
 </html>
